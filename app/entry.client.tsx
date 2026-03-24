@@ -22,6 +22,7 @@ Sentry.init({
       useEffect,
       useLocation,
       useMatches,
+      tracePropagationTargets: ['localhost', /^https:\/\/[^/]*\.convex\.cloud/],
     }),
     Sentry.replayIntegration({
       maskAllText: false,
