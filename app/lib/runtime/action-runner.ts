@@ -396,6 +396,35 @@ export class ActionRunner {
           }
           break;
         }
+        case 'create_file': {
+          try {
+            const args = createFileToolParameters.parse(parsed.args);
+            const container = await this.#webcontainer;
+            const relPath = workDirRelative(args.path);
+
+            // Ensure parent directory exists
+            const parentDir = nodePath.dirname(relPath);
+            if (parentDir !== '.') {
+              await container.fs.mkdir(parentDir, { recursive: true });
+            }
+
+            // Save history
+            try {
+              const file = await readPath(container, relPath);
+              if (file.type === 'file') {
+                await this.saveFileHistory(relPath, { content: file.content });
+              }
+            } catch (e) {
+              // File doesn't exist yet, that's fine
+            }
+
+            await container.fs.writeFile(relPath, args.content);
+            result = `Successfully created ${args.path}`;
+          } catch (error: any) {
+            result = `Error creating ${parsed.args.path}: ${error.message}`;
+          }
+          break;
+        }
         case 'npmInstall': {
           try {
             const args = npmInstallToolParameters.parse(parsed.args);
