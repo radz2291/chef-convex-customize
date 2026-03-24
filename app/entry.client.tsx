@@ -9,9 +9,8 @@ const environment = process.env.VERCEL_ENV === 'production' ? 'production' : 'de
 Sentry.init({
   dsn: 'https://16615d9875b4630cfabeed5d376c4343@o1192621.ingest.us.sentry.io/4509097600811008',
   environment,
-  tracesSampleRate: 1,
+  tracesSampleRate: environment === 'production' ? 1 : 0,
   tracePropagationTargets: [],
-  enabled: environment === 'production',
 
   integrations: [
     Sentry.feedbackIntegration({
