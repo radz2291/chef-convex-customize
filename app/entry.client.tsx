@@ -10,6 +10,7 @@ Sentry.init({
   dsn: 'https://16615d9875b4630cfabeed5d376c4343@o1192621.ingest.us.sentry.io/4509097600811008',
   environment,
   tracesSampleRate: 1,
+  tracePropagationTargets: ['localhost', /^https:\/\/[^/]*\.convex\.cloud/],
 
   integrations: [
     Sentry.feedbackIntegration({
@@ -22,7 +23,6 @@ Sentry.init({
       useEffect,
       useLocation,
       useMatches,
-      tracePropagationTargets: ['localhost', /^https:\/\/[^/]*\.convex\.cloud/],
     }),
     Sentry.replayIntegration({
       maskAllText: false,
