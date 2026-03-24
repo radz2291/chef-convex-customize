@@ -6,14 +6,14 @@ export const filesToArtifacts = (files: { [path: string]: { content: string } },
   return `
 <boltArtifact id="${id}" title="User Updated Files">
 ${Object.keys(files)
-  .map(
-    (filePath) => `
+      .map(
+        (filePath) => `
 <boltAction type="file" filePath="${filePath}">
 ${files[filePath].content}
 </boltAction>
 `,
-  )
-  .join('\n')}
+      )
+      .join('\n')}
 </boltArtifact>
   `;
 };
@@ -59,6 +59,9 @@ export async function readPath(
   } catch (e: any) {
     if (typeof e.message !== 'string') {
       throw e;
+    }
+    if (e.message.startsWith('ENOENT')) {
+      throw new Error(`${relPath} not found`);
     }
     if (!e.message.startsWith('ENOTDIR')) {
       throw e;
