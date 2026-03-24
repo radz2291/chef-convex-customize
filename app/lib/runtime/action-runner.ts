@@ -354,7 +354,7 @@ export class ActionRunner {
           } catch (error: any) {
             let message = error.message;
             if (message.includes('not found')) {
-              message += ". If the file does not exist, use a <boltArtifact> with a 'file' action to create it.";
+              message += ". If the file does not exist, use the 'create_file' tool to create it.";
             }
             result = message.startsWith('Error:') ? message : `Error: ${message}`;
           }
@@ -390,7 +390,7 @@ export class ActionRunner {
           } catch (error: any) {
             let message = error.message;
             if (message.includes('not found')) {
-              message += ". If the file does not exist, use a <boltArtifact> with a 'file' action to create it.";
+              message += ". If the file does not exist, use the 'create_file' tool to create it.";
             }
             result = message.startsWith('Error:') ? message : `Error: ${message}`;
           }

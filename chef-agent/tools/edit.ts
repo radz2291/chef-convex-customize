@@ -1,7 +1,7 @@
 import type { Tool } from 'ai';
 import { z } from 'zod';
 
-const editToolDescription = `
+export const editToolDescription = `
 Replace a string of text that appears exactly once in a file with a
 new string of text. Use this tool when fixing a bug or making a
 small tweak to a file.
@@ -10,7 +10,7 @@ You MUST know a file's current contents before using this tool. This may
 either be from context or previous use of the \`view\` tool.
 
 The \`old\` and \`new\` parameters must be less than 100,000 characters each.
-If the file does not exist, you MUST use a <boltArtifact> with <boltAction type="file"> to create it instead of this tool.
+If the file does not exist, you MUST use the \`create_file\` tool to create it instead of this tool.
 `;
 
 export const editToolParameters = z.object({
