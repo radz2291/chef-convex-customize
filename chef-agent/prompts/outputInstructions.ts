@@ -59,9 +59,9 @@ function artifactInstructions(_options: SystemPromptOptions) {
     3. Completely rewriting a file
 
     NEVER use artifacts for:
-    1. Small changes to existing files (use the `edit` tool)
+    1. Small changes to existing files (use the \`edit\` tool)
     
-    IMPORTANT: If a file does not exist, you MUST use an artifact with <boltAction type="file"> to create it. You cannot use the `edit` tool on non-existent files.
+    IMPORTANT: If a file does not exist, you MUST use an artifact with <boltAction type="file"> to create it. You cannot use the \`edit\` tool on non-existent files.
 
     If you're not using the \`edit\` tool, you can write code to the WebContainer by specifying
     a \`<boltArtifact>\` tag in your response with many \`<boltAction>\` tags inside.
