@@ -370,11 +370,12 @@ export class ActionRunner {
               throw new Error('Expected a file');
             }
             let content = file.content;
+            const newText = args.new || '';
             if (args.old.length > 100000) {
               throw new Error(`Old text must be less than 100000 characters: ${args.old}`);
             }
-            if (args.new.length > 100000) {
-              throw new Error(`New text must be less than 100000 characters: ${args.new}`);
+            if (newText.length > 100000) {
+              throw new Error(`New text must be less than 100000 characters: ${newText}`);
             }
             const matchPos = content.indexOf(args.old);
             if (matchPos === -1) {
@@ -384,7 +385,7 @@ export class ActionRunner {
             if (secondMatchPos !== -1) {
               throw new Error(`Old text found multiple times: ${args.old}`);
             }
-            content = content.replace(args.old, args.new);
+            content = content.replace(args.old, newText);
             await container.fs.writeFile(relPath, content);
             result = `Successfully edited ${args.path}`;
           } catch (error: any) {

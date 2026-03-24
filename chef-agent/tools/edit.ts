@@ -16,7 +16,7 @@ If the file does not exist, you MUST use the \`create_file\` tool to create it i
 export const editToolParameters = z.object({
   path: z.string().describe('The absolute path to the file to edit.'),
   old: z.string().describe('The fragment of text to replace. Must be less than 100,000 characters.'),
-  new: z.string().describe('The new fragment of text to replace it with. Must be less than 100,000 characters.'),
+  new: z.string().optional().describe('The new fragment of text to replace it with. Omit this parameter to delete the old text. Must be less than 100,000 characters.'),
 });
 
 export const editTool: Tool = {
