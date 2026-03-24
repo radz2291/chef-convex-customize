@@ -115,6 +115,16 @@ export const models: Partial<
     provider: 'openai',
     requireKey: true,
   },
+  'glm-4.7': {
+    name: 'GLM-4.7',
+    provider: 'openai',
+    requireKey: true,
+  },
+  'glm-5': {
+    name: 'GLM-5',
+    provider: 'openai',
+    requireKey: true,
+  },
 } as const;
 
 export const ModelSelector = React.memo(function ModelSelector({

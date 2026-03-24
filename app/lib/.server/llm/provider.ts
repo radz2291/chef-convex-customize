@@ -134,7 +134,8 @@ export function getProvider(
       const openai = createOpenAI({
         apiKey: userApiKey || getEnv('OPENAI_API_KEY'),
         fetch: userApiKey ? userKeyApiFetch('OpenAI') : fetch,
-        compatibility: 'strict',
+        baseURL: getEnv('OPENAI_API_BASE_URL'),
+        compatibility: getEnv('OPENAI_API_BASE_URL') ? 'compatible' : 'strict',
       });
       provider = {
         model: openai(model),

@@ -206,6 +206,8 @@ export const Chat = memo(
           'gemini-2.5-pro': { providerName: 'google', apiKeyField: 'google' },
           'claude-3-5-haiku': { providerName: 'anthropic', apiKeyField: 'value' },
           'gpt-4.1-mini': { providerName: 'openai', apiKeyField: 'openai' },
+          'glm-4.7': { providerName: 'openai', apiKeyField: 'openai' },
+          'glm-5': { providerName: 'openai', apiKeyField: 'openai' },
         };
 
         // Get provider info for the current model
@@ -323,6 +325,12 @@ export const Chat = memo(
         } else if (modelSelection === 'gpt-5') {
           modelProvider = 'OpenAI';
           modelChoice = 'gpt-5';
+        } else if (modelSelection === 'glm-4.7') {
+          modelProvider = 'OpenAI';
+          modelChoice = 'GLM-4.7';
+        } else if (modelSelection === 'glm-5') {
+          modelProvider = 'OpenAI';
+          modelChoice = 'GLM-5';
         } else {
           const _exhaustiveCheck: never = modelSelection;
           throw new Error(`Unknown model: ${_exhaustiveCheck}`);
@@ -538,11 +546,11 @@ export const Chat = memo(
         const maybeRelevantFilesMessage: UIMessage = shouldSendRelevantFiles
           ? chatContextManager.current.relevantFiles(messages, `${Date.now()}`, maxRelevantFilesSize)
           : {
-              id: `${Date.now()}`,
-              content: '',
-              role: 'user',
-              parts: [],
-            };
+            id: `${Date.now()}`,
+            content: '',
+            role: 'user',
+            parts: [],
+          };
 
         // Make a clone of the relevantFilesMessage so we can inject the modified message after relevant files before the messageInput later
         const newMessage = structuredClone(maybeRelevantFilesMessage);
