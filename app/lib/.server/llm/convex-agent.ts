@@ -17,6 +17,7 @@ import type { ConvexToolSet } from 'chef-agent/types';
 import { npmInstallTool } from 'chef-agent/tools/npmInstall';
 import type { Tracer } from '~/lib/.server/chat';
 import { editTool } from 'chef-agent/tools/edit';
+import { createFileTool } from 'chef-agent/tools/create_file';
 import { captureException, captureMessage } from '@sentry/remix';
 import type { SystemPromptOptions } from 'chef-agent/types';
 import { cleanupAssistantMessages } from 'chef-agent/cleanupAssistantMessages';
@@ -101,6 +102,7 @@ export async function convexAgent(args: {
   tools.addEnvironmentVariables = addEnvironmentVariablesTool();
   tools.view = viewTool;
   tools.edit = editTool;
+  tools.create_file = createFileTool;
 
   const messagesForDataStream: CoreMessage[] = [
     {

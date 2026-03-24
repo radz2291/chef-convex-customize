@@ -61,7 +61,7 @@ function artifactInstructions(_options: SystemPromptOptions) {
     NEVER use artifacts for:
     1. Small changes to existing files (use the \`edit\` tool)
     
-    IMPORTANT: If a file does not exist, you MUST use an artifact with <boltAction type="file"> to create it. You cannot use the \`edit\` tool on non-existent files.
+    IMPORTANT: If a file does not exist, you MUST use the \`create_file\` tool to create it. You cannot use the \`edit\` tool on non-existent files.
 
     If you're not using the \`edit\` tool, you can write code to the WebContainer by specifying
     a \`<boltArtifact>\` tag in your response with many \`<boltAction>\` tags inside.
@@ -265,5 +265,11 @@ function preciseToolInstructions() {
       CRITICAL: Always use the view tool first to see the exact content of the file before using the edit tool.
       This ensures you can provide the exact text to replace.
     </edit_tool>
+
+    <create_file_tool>
+      Use the \`create_file\` tool to create new files or completely overwrite existing files.
+      This tool is the most reliable way to create new modules and components.
+      It will automatically create any missing parent directories for you.
+    </create_file_tool>
   `;
 }
