@@ -62,8 +62,15 @@ export async function chatAction({ request }: ActionFunctionArgs) {
     modelProvider: ModelProvider;
     modelChoice: string | undefined;
     userApiKey:
-      | { preference: 'always' | 'quotaExhausted'; value?: string; openai?: string; xai?: string; google?: string }
-      | undefined;
+    | {
+      preference: 'always' | 'quotaExhausted';
+      value?: string;
+      openai?: string;
+      xai?: string;
+      google?: string;
+      minimax?: string;
+    }
+    | undefined;
     shouldDisableTools: boolean;
     recordRawPromptsForDebugging?: boolean;
     collapsedMessages: boolean;
@@ -135,6 +142,8 @@ export async function chatAction({ request }: ActionFunctionArgs) {
       userApiKey = body.userApiKey?.openai;
     } else if (body.modelProvider === 'XAI') {
       userApiKey = body.userApiKey?.xai;
+    } else if (body.modelProvider === 'Minimax') {
+      userApiKey = body.userApiKey?.minimax;
     } else {
       userApiKey = body.userApiKey?.google;
     }
@@ -179,9 +188,9 @@ export async function chatAction({ request }: ActionFunctionArgs) {
       // Only set the requested model choice if we're using a user API key or Claude 4 Sonnet/GPT-5
       modelChoice:
         userApiKey ||
-        body.modelChoice === 'gpt-5' ||
-        body.modelChoice === 'claude-sonnet-4-5' ||
-        body.modelChoice === 'claude-sonnet-4-6'
+          body.modelChoice === 'gpt-5' ||
+          body.modelChoice === 'claude-sonnet-4-5' ||
+          body.modelChoice === 'claude-sonnet-4-6'
           ? body.modelChoice
           : undefined,
       userApiKey,
@@ -224,7 +233,14 @@ export async function chatAction({ request }: ActionFunctionArgs) {
 // Returns whether or not the user has an API key set for a given provider
 function hasApiKeySetForProvider(
   userApiKey:
-    | { preference: 'always' | 'quotaExhausted'; value?: string; openai?: string; xai?: string; google?: string }
+    | {
+      preference: 'always' | 'quotaExhausted';
+      value?: string;
+      openai?: string;
+      xai?: string;
+      google?: string;
+      minimax?: string;
+    }
     | undefined,
   provider: ModelProvider,
 ) {
@@ -237,6 +253,8 @@ function hasApiKeySetForProvider(
       return userApiKey?.xai !== undefined;
     case 'Google':
       return userApiKey?.google !== undefined;
+    case 'Minimax':
+      return userApiKey?.minimax !== undefined;
     default:
       return false;
   }

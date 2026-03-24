@@ -61,6 +61,8 @@ export function modelForProvider(provider: ModelProvider, modelChoice: string | 
       return getEnv('XAI_MODEL') || 'grok-3-mini';
     case 'Google':
       return getEnv('GOOGLE_MODEL') || 'gemini-2.5-pro';
+    case 'Minimax':
+      return getEnv('MINIMAX_MODEL') || 'MiniMax-M2.5';
     default: {
       const _exhaustiveCheck: never = provider;
       throw new Error(`Unknown provider: ${_exhaustiveCheck}`);
@@ -224,6 +226,20 @@ export function getProvider(
       provider = {
         model: anthropic(model),
         maxTokens: anthropicMaxTokens(modelChoice),
+      };
+      break;
+    }
+    case 'Minimax': {
+      model = modelForProvider(modelProvider, modelChoice);
+      const minimax = createOpenAI({
+        apiKey: userApiKey || getEnv('MINIMAX_API_KEY'),
+        fetch: userApiKey ? userKeyApiFetch('Minimax') : fetch,
+        baseURL: getEnv('MINIMAX_API_BASE_URL') || 'https://api.minimax.io/v1',
+        compatibility: 'compatible',
+      });
+      provider = {
+        model: minimax(model),
+        maxTokens: 24576,
       };
       break;
     }

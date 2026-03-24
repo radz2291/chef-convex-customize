@@ -10,7 +10,7 @@ import type { Doc } from '@convex/_generated/dataModel';
 import { captureMessage } from '@sentry/remix';
 import { useLaunchDarkly } from '~/lib/hooks/useLaunchDarkly';
 
-export type ModelProvider = 'openai' | 'google' | 'xai' | 'anthropic' | 'auto';
+export type ModelProvider = 'openai' | 'google' | 'xai' | 'anthropic' | 'minimax' | 'auto';
 
 export function displayModelProviderName(provider: ModelProvider) {
   switch (provider) {
@@ -22,6 +22,8 @@ export function displayModelProviderName(provider: ModelProvider) {
       return 'xAI';
     case 'anthropic':
       return 'Anthropic';
+    case 'minimax':
+      return 'Minimax';
     case 'auto':
       return 'Anthropic';
     default: {
@@ -58,6 +60,7 @@ const providerToIcon: Record<string, React.ReactNode> = {
       />
     </svg>
   ),
+  minimax: svgIcon('/icons/minimax.svg'),
 };
 
 export const models: Partial<
@@ -123,6 +126,11 @@ export const models: Partial<
   'glm-5': {
     name: 'GLM-5',
     provider: 'openai',
+    requireKey: true,
+  },
+  'minimax-m2.5': {
+    name: 'M2.5',
+    provider: 'minimax',
     requireKey: true,
   },
 } as const;

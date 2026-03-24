@@ -35,6 +35,7 @@ export type ModelSelection =
   | 'grok-3-mini'
   | 'gemini-2.5-pro'
   | 'glm-4.7'
-  | 'glm-5';
+  | 'glm-5'
+  | 'minimax-m2.5';
 
 export const MAX_CONSECUTIVE_DEPLOY_ERRORS = 5;
