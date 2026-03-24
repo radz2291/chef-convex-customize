@@ -87,8 +87,8 @@ export async function convexAgent(args: {
     enableBulkEdits: true,
     includeTemplate: true,
     openaiProxyEnabled: getEnv('OPENAI_PROXY_ENABLED') == '1',
-    usingOpenAi: modelProvider == 'OpenAI',
-    usingGoogle: modelProvider == 'Google',
+    usingOpenAi: modelProvider === 'OpenAI' || modelProvider === 'Minimax',
+    usingGoogle: modelProvider === 'Google',
     resendProxyEnabled: getEnv('RESEND_PROXY_ENABLED') == '1',
     enableResend: featureFlags.enableResend,
   };
