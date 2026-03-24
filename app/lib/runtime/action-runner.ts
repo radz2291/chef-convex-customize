@@ -337,46 +337,54 @@ export class ActionRunner {
     try {
       switch (parsed.toolName) {
         case 'view': {
-          const args = viewParameters.parse(parsed.args);
-          const container = await this.#webcontainer;
-          const relPath = workDirRelative(args.path);
-          const file = await readPath(container, relPath);
-          if (file.type === 'directory') {
-            result = renderDirectory(file.children);
-          } else {
-            if (args.view_range && args.view_range.length !== 2) {
-              throw new Error('When provided, view_range must be an array of two numbers');
+          try {
+            const args = viewParameters.parse(parsed.args);
+            const container = await this.#webcontainer;
+            const relPath = workDirRelative(args.path);
+            const file = await readPath(container, relPath);
+            if (file.type === 'directory') {
+              result = renderDirectory(file.children);
+            } else {
+              if (args.view_range && args.view_range.length !== 2) {
+                throw new Error('When provided, view_range must be an array of two numbers');
+              }
+              result = renderFile(file.content, args.view_range as [number, number]);
             }
-            result = renderFile(file.content, args.view_range as [number, number]);
+          } catch (error: any) {
+            result = error.message.startsWith('Error:') ? error.message : `Error: ${error.message}`;
           }
           break;
         }
         case 'edit': {
-          const args = editToolParameters.parse(parsed.args);
-          const container = await this.#webcontainer;
-          const relPath = workDirRelative(args.path);
-          const file = await readPath(container, relPath);
-          if (file.type !== 'file') {
-            throw new Error('Expected a file');
+          try {
+            const args = editToolParameters.parse(parsed.args);
+            const container = await this.#webcontainer;
+            const relPath = workDirRelative(args.path);
+            const file = await readPath(container, relPath);
+            if (file.type !== 'file') {
+              throw new Error('Expected a file');
+            }
+            let content = file.content;
+            if (args.old.length > 500000) {
+              throw new Error(`Old text must be less than 500000 characters: ${args.old}`);
+            }
+            if (args.new.length > 500000) {
+              throw new Error(`New text must be less than 500000 characters: ${args.new}`);
+            }
+            const matchPos = content.indexOf(args.old);
+            if (matchPos === -1) {
+              throw new Error(`Old text not found: ${args.old}`);
+            }
+            const secondMatchPos = content.indexOf(args.old, matchPos + args.old.length);
+            if (secondMatchPos !== -1) {
+              throw new Error(`Old text found multiple times: ${args.old}`);
+            }
+            content = content.replace(args.old, args.new);
+            await container.fs.writeFile(relPath, content);
+            result = `Successfully edited ${args.path}`;
+          } catch (error: any) {
+            result = error.message.startsWith('Error:') ? error.message : `Error: ${error.message}`;
           }
-          let content = file.content;
-          if (args.old.length > 500000) {
-            throw new Error(`Old text must be less than 500000 characters: ${args.old}`);
-          }
-          if (args.new.length > 500000) {
-            throw new Error(`New text must be less than 500000 characters: ${args.new}`);
-          }
-          const matchPos = content.indexOf(args.old);
-          if (matchPos === -1) {
-            throw new Error(`Old text not found: ${args.old}`);
-          }
-          const secondMatchPos = content.indexOf(args.old, matchPos + args.old.length);
-          if (secondMatchPos !== -1) {
-            throw new Error(`Old text found multiple times: ${args.old}`);
-          }
-          content = content.replace(args.old, args.new);
-          await container.fs.writeFile(relPath, content);
-          result = `Successfully edited ${args.path}`;
           break;
         }
         case 'npmInstall': {
@@ -553,7 +561,6 @@ export class ActionRunner {
         toolCallId: action.parsedContent.toolCallId,
         toolName: parsed.toolName as ConvexToolName,
       });
-      throw e;
     }
   }
 }
