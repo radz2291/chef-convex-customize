@@ -11,6 +11,7 @@ Sentry.init({
   environment,
   tracesSampleRate: 1,
   tracePropagationTargets: [],
+  enabled: environment === 'production',
 
   integrations: [
     Sentry.feedbackIntegration({
