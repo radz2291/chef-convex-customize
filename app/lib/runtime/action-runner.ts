@@ -351,11 +351,11 @@ export class ActionRunner {
               result = renderFile(file.content, args.view_range as [number, number]);
             }
           } catch (error: any) {
-            let message = error.message.startsWith('Error:') ? error.message : `Error: ${error.message}`;
+            let message = error.message;
             if (message.includes('not found')) {
-              message += ". If you intended to create this file, use a <boltAction type=\"file\"> action instead.";
+              message += ". If the file does not exist, use a <boltArtifact> with a 'file' action to create it.";
             }
-            result = message;
+            result = message.startsWith('Error:') ? message : `Error: ${message}`;
           }
           break;
         }
@@ -377,7 +377,7 @@ export class ActionRunner {
             }
             const matchPos = content.indexOf(args.old);
             if (matchPos === -1) {
-              throw new Error(`Old text not found: ${args.old}`);
+              throw new Error(`Old text not found in ${args.path}: ${args.old}`);
             }
             const secondMatchPos = content.indexOf(args.old, matchPos + args.old.length);
             if (secondMatchPos !== -1) {
@@ -387,7 +387,11 @@ export class ActionRunner {
             await container.fs.writeFile(relPath, content);
             result = `Successfully edited ${args.path}`;
           } catch (error: any) {
-            result = error.message.startsWith('Error:') ? error.message : `Error: ${error.message}`;
+            let message = error.message;
+            if (message.includes('not found')) {
+              message += ". If the file does not exist, use a <boltArtifact> with a 'file' action to create it.";
+            }
+            result = message.startsWith('Error:') ? message : `Error: ${message}`;
           }
           break;
         }

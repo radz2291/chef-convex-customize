@@ -9,13 +9,14 @@ small tweak to a file.
 You MUST know a file's current contents before using this tool. This may
 either be from context or previous use of the \`view\` tool.
 
-The \`old\` and \`new\` parameters must be less than 1024 characters each.
+The \`old\` and \`new\` parameters must be less than 100,000 characters each.
+If the file does not exist, you MUST use a <boltArtifact> with <boltAction type="file"> to create it instead of this tool.
 `;
 
 export const editToolParameters = z.object({
   path: z.string().describe('The absolute path to the file to edit.'),
-  old: z.string().describe('The fragment of text to replace. Must be less than 1024 characters.'),
-  new: z.string().describe('The new fragment of text to replace it with. Must be less than 1024 characters.'),
+  old: z.string().describe('The fragment of text to replace. Must be less than 100,000 characters.'),
+  new: z.string().describe('The new fragment of text to replace it with. Must be less than 100,000 characters.'),
 });
 
 export const editTool: Tool = {
