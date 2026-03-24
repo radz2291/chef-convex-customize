@@ -54,16 +54,14 @@ function artifactInstructions(_options: SystemPromptOptions) {
   return stripIndents`
   <artifacts>
     CRITICAL: Artifacts should ONLY be used for:
-    1. Creating new files
+    1. Creating new files (use <boltAction type="file" filePath="...">)
     2. Making large changes that affect multiple files
     3. Completely rewriting a file
 
     NEVER use artifacts for:
-    1. Small changes to existing files
-    2. Adding new functions or methods
-    3. Updating specific parts of a file
-
-    For ALL of the above cases, use the \`edit\` tool instead.
+    1. Small changes to existing files (use the `edit` tool)
+    
+    IMPORTANT: If a file does not exist, you MUST use an artifact with <boltAction type="file"> to create it. You cannot use the `edit` tool on non-existent files.
 
     If you're not using the \`edit\` tool, you can write code to the WebContainer by specifying
     a \`<boltArtifact>\` tag in your response with many \`<boltAction>\` tags inside.
