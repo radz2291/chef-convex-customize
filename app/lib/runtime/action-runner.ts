@@ -351,7 +351,11 @@ export class ActionRunner {
               result = renderFile(file.content, args.view_range as [number, number]);
             }
           } catch (error: any) {
-            result = error.message.startsWith('Error:') ? error.message : `Error: ${error.message}`;
+            let message = error.message.startsWith('Error:') ? error.message : `Error: ${error.message}`;
+            if (message.includes('not found')) {
+              message += ". If you intended to create this file, use a <boltAction type=\"file\"> action instead.";
+            }
+            result = message;
           }
           break;
         }
