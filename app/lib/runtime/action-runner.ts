@@ -365,11 +365,11 @@ export class ActionRunner {
               throw new Error('Expected a file');
             }
             let content = file.content;
-            if (args.old.length > 500000) {
-              throw new Error(`Old text must be less than 500000 characters: ${args.old}`);
+            if (args.old.length > 100000) {
+              throw new Error(`Old text must be less than 100000 characters: ${args.old}`);
             }
-            if (args.new.length > 500000) {
-              throw new Error(`New text must be less than 500000 characters: ${args.new}`);
+            if (args.new.length > 100000) {
+              throw new Error(`New text must be less than 100000 characters: ${args.new}`);
             }
             const matchPos = content.indexOf(args.old);
             if (matchPos === -1) {
