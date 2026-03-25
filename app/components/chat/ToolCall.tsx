@@ -467,7 +467,7 @@ function toolTitle(invocation: ConvexToolInvocation): React.ReactNode {
       const args = loggingSafeParse(editToolParameters, invocation.args);
       let renderedPath = 'a file';
       if (args.success) {
-        renderedPath = args.data.path;
+        renderedPath = getRelativePath(args.data.path) || args.data.path;
       }
       return (
         <div className="flex items-center gap-2">
@@ -480,7 +480,7 @@ function toolTitle(invocation: ConvexToolInvocation): React.ReactNode {
       const args = loggingSafeParse(createFileToolParameters, invocation.args);
       let renderedPath = 'a file';
       if (args.success) {
-        renderedPath = args.data.path;
+        renderedPath = getRelativePath(args.data.path) || args.data.path;
       }
       return (
         <div className="flex items-center gap-2">
