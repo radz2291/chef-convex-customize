@@ -87,7 +87,9 @@ export const openaiProxy = httpAction(async (ctx, req) => {
     top_p: body.top_p,
     user: body.user,
   };
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const baseUrl = process.env.OPENAI_API_BASE_URL || "https://api.openai.com/v1";
+  const proxyUrl = baseUrl.endsWith("/chat/completions") ? baseUrl : `${baseUrl}/chat/completions`;
+  const response = await fetch(proxyUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

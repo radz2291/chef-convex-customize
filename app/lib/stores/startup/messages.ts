@@ -134,10 +134,46 @@ export function serializeMessageForConvex(message: Message) {
   };
 }
 
+function pruneMessagesForSync(messages: Message[], maxChars = 800000): Message[] {
+  let totalChars = 0;
+  const prunedMessages: Message[] = [];
+
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    const messageChars = JSON.stringify(message).length;
+
+    if (totalChars + messageChars > maxChars && i < messages.length - 2) {
+      const prunedMessage = { ...message };
+
+      if (prunedMessage.parts) {
+        prunedMessage.parts = prunedMessage.parts.map((part) => {
+          if (part.type === 'text' && part.text.length > 5000) {
+            return { ...part, text: part.text.substring(0, 5000) + '... [TRUNCATED]' };
+          }
+          return part;
+        });
+      }
+
+      if (prunedMessage.content && prunedMessage.content.length > 5000) {
+        prunedMessage.content = prunedMessage.content.substring(0, 5000) + '... [TRUNCATED]';
+      }
+
+      prunedMessages.unshift(prunedMessage);
+    } else {
+      prunedMessages.unshift(message);
+      totalChars += messageChars;
+    }
+  }
+
+  return prunedMessages;
+}
+
 async function compressMessages(messages: Message[], lastMessageRank: number, partIndex: number): Promise<Uint8Array> {
   const slicedMessages = messages.slice(0, lastMessageRank + 1);
   slicedMessages[lastMessageRank].parts = slicedMessages[lastMessageRank].parts?.slice(0, partIndex + 1);
-  const serialized = slicedMessages.map(serializeMessageForConvex);
+
+  const prunedForSync = pruneMessagesForSync(slicedMessages);
+  const serialized = prunedForSync.map(serializeMessageForConvex);
 
   const textEncoder = new TextEncoder();
   const uint8Array = textEncoder.encode(JSON.stringify(serialized));

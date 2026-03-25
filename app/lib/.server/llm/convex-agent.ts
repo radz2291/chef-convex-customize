@@ -40,6 +40,43 @@ import type { PromptCharacterCounts } from 'chef-agent/ChatContextManager';
 
 type Messages = Message[];
 
+function pruneMessages(messages: Messages, maxChars = 600000): Messages {
+  let totalChars = 0;
+  const prunedMessages: Messages = [];
+
+  // Iterate backwards to keep the most recent messages intact
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    const messageChars = (message.content || '').length +
+      (message.parts?.reduce((acc, part) => acc + (part.type === 'text' ? part.text.length : 0), 0) || 0);
+
+    if (totalChars + messageChars > maxChars && i < messages.length - 2) {
+      // Truncate older messages (but keep the last 2 intact)
+      const prunedMessage = { ...message };
+
+      if (prunedMessage.parts) {
+        prunedMessage.parts = prunedMessage.parts.map((part) => {
+          if (part.type === 'text' && part.text.length > 5000) {
+            return { ...part, text: part.text.substring(0, 5000) + '... [TRUNCATED FOR CONTEXT]' };
+          }
+          return part;
+        });
+      }
+
+      if (prunedMessage.content && prunedMessage.content.length > 5000) {
+        prunedMessage.content = prunedMessage.content.substring(0, 5000) + '... [TRUNCATED FOR CONTEXT]';
+      }
+
+      prunedMessages.unshift(prunedMessage);
+    } else {
+      prunedMessages.unshift(message);
+      totalChars += messageChars;
+    }
+  }
+
+  return prunedMessages;
+}
+
 export async function convexAgent(args: {
   chatInitialId: string;
   firstUserMessage: boolean;
@@ -63,7 +100,7 @@ export async function convexAgent(args: {
   const {
     chatInitialId,
     firstUserMessage,
-    messages,
+    messages: rawMessages,
     tracer,
     modelProvider,
     userApiKey,
@@ -75,6 +112,7 @@ export async function convexAgent(args: {
     promptCharacterCounts,
     featureFlags,
   } = args;
+  const messages = pruneMessages(rawMessages);
   console.debug('Starting agent with model provider', modelProvider);
   if (userApiKey) {
     console.debug('Using user provided API key');

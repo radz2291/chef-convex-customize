@@ -33,9 +33,9 @@ export function useBackupSyncState(chatId: string, loadedSubchatIndex?: number, 
     api.messages.get,
     sessionId
       ? {
-          id: chatId,
-          sessionId,
-        }
+        id: chatId,
+        sessionId,
+      }
       : 'skip',
   );
   useEffect(() => {
@@ -146,7 +146,7 @@ async function chatSyncWorker(args: {
     const currentState = await waitForInitialized();
     const completeMessageInfo = lastCompleteMessageInfoStore.get();
     if (completeMessageInfo === null) {
-      logger.error('Complete message info not initialized');
+      await new Promise((resolve) => setTimeout(resolve, 100));
       continue;
     }
     const areMessagesUpToDate =
@@ -217,7 +217,6 @@ async function chatSyncWorker(args: {
       );
     }
     if (messageBlob === undefined && snapshotBlob === undefined) {
-      logger.info('Complete message info not initialized');
       continue;
     }
     let response;
@@ -249,7 +248,7 @@ async function chatSyncWorker(args: {
     }
     if (error !== null || (response !== undefined && !response.ok)) {
       const errorText = response !== undefined ? await response.text() : (error?.message ?? 'Unknown error');
-      logger.error('Complete message info not initialized');
+      logger.error('Failed to sync chat history to Convex:', errorText);
       const newFailureCount = currentState.numFailures + 1;
       chatSyncState.set({
         ...currentState,

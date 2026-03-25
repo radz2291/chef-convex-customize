@@ -24,6 +24,7 @@ export const firstMessage = internalAction({
     const { chatMessageId, message } = args;
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_API_BASE_URL || "https://api.openai.com/v1",
     });
     const response = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
