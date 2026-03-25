@@ -76,75 +76,82 @@ export function useEditChatDescription({
     }
   }, [chatId, sessionId, initialDescription, convex]);
 
-  const handleBlur = useCallback(async () => {
+  const saveDescription = useCallback(async (desc: string) => {
+    const isValidDescription = (val: string): boolean => {
+      const trimmedDesc = val.trim();
+
+      if (trimmedDesc === initialDescription) {
+        toggleEditMode();
+        return false; // No change, skip validation
+      }
+
+      const lengthValid = trimmedDesc.length > 0 && trimmedDesc.length <= 100;
+
+      // Allow letters, numbers, spaces, and common punctuation but exclude characters that could cause issues
+      const characterValid = /^[a-zA-Z0-9\s\-_.,!?()[\]{}'"]+$/.test(trimmedDesc);
+
+      if (!lengthValid) {
+        toast.error('Description must be between 1 and 100 characters.');
+        return false;
+      }
+
+      if (!characterValid) {
+        toast.error('Description can only contain letters, numbers, spaces, and basic punctuation.');
+        return false;
+      }
+
+      return true;
+    };
+
+    if (!isValidDescription(desc)) {
+      return;
+    }
+
+    try {
+      if (!chatId || !sessionId) {
+        toast.error('Chat Id is not available');
+        return;
+      }
+
+      await convex.mutation(api.messages.setDescription, { id: chatId, sessionId, description: desc });
+
+      if (syncWithGlobalStore) {
+        descriptionStore.set(desc);
+      }
+
+      toast.success('Chat description updated successfully');
+    } catch (error) {
+      toast.error('Failed to update chat description: ' + (error as Error).message);
+    }
+
+    toggleEditMode();
+  }, [convex, chatId, initialDescription, toggleEditMode, syncWithGlobalStore, sessionId]);
+
+  const handleCancel = useCallback(async () => {
     const latestDescription = await fetchLatestDescription();
     setCurrentDescription(latestDescription);
     toggleEditMode();
   }, [fetchLatestDescription, toggleEditMode]);
 
+  const handleBlur = useCallback(async () => {
+    await saveDescription(currentDescription);
+  }, [currentDescription, saveDescription]);
+
   const handleSubmit = useCallback(
     async (event: React.FormEvent) => {
       event.preventDefault();
-
-      const isValidDescription = (desc: string): boolean => {
-        const trimmedDesc = desc.trim();
-
-        if (trimmedDesc === initialDescription) {
-          toggleEditMode();
-          return false; // No change, skip validation
-        }
-
-        const lengthValid = trimmedDesc.length > 0 && trimmedDesc.length <= 100;
-
-        // Allow letters, numbers, spaces, and common punctuation but exclude characters that could cause issues
-        const characterValid = /^[a-zA-Z0-9\s\-_.,!?()[\]{}'"]+$/.test(trimmedDesc);
-
-        if (!lengthValid) {
-          toast.error('Description must be between 1 and 100 characters.');
-          return false;
-        }
-
-        if (!characterValid) {
-          toast.error('Description can only contain letters, numbers, spaces, and basic punctuation.');
-          return false;
-        }
-
-        return true;
-      };
-
-      if (!isValidDescription(currentDescription)) {
-        return;
-      }
-
-      try {
-        if (!chatId || !sessionId) {
-          toast.error('Chat Id is not available');
-          return;
-        }
-
-        await convex.mutation(api.messages.setDescription, { id: chatId, sessionId, description: currentDescription });
-
-        if (syncWithGlobalStore) {
-          descriptionStore.set(currentDescription);
-        }
-
-        toast.success('Chat description updated successfully');
-      } catch (error) {
-        toast.error('Failed to update chat description: ' + (error as Error).message);
-      }
-
-      toggleEditMode();
+      await saveDescription(currentDescription);
     },
-    [currentDescription, convex, chatId, initialDescription, toggleEditMode, syncWithGlobalStore, sessionId],
+    [currentDescription, saveDescription],
   );
 
   const handleKeyDown = useCallback(
     async (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Escape') {
-        await handleBlur();
+        await handleCancel();
       }
     },
-    [handleBlur],
+    [handleCancel],
   );
 
   return {
