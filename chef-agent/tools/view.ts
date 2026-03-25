@@ -16,7 +16,20 @@ The file contents are returned as a string with 1-indexed line numbers.
 
 export const viewParameters = z.object({
   path: z.string().describe('The absolute path to the file to read.'),
-  view_range: z.array(z.number()).nullable().optional().describe(viewRangeDescription),
+  view_range: z
+    .preprocess((val) => {
+      if (typeof val === 'string') {
+        try {
+          return JSON.parse(val);
+        } catch {
+          return val;
+        }
+      }
+      return val;
+    }, z.array(z.number()))
+    .nullable()
+    .optional()
+    .describe(viewRangeDescription),
 });
 
 export const viewTool: Tool = {
