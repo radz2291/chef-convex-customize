@@ -179,7 +179,7 @@ export function calculateChefTokens(totalUsage: Usage, provider?: ProviderType) 
     const cacheReadInputTokens = totalUsage.bedrockCacheReadInputTokens * 3;
     chefTokens += cacheReadInputTokens;
     breakdown.promptTokens.bedrock.cached += cacheReadInputTokens;
-  } else if (provider === 'OpenAI') {
+  } else if (provider === 'OpenAI' || provider === 'Minimax') {
     const openaiCompletionTokens = totalUsage.completionTokens * 100;
     chefTokens += openaiCompletionTokens;
     breakdown.completionTokens.openai = openaiCompletionTokens;
