@@ -28,6 +28,7 @@ import { themeStore } from '~/lib/stores/theme';
 import { getLanguageFromExtension } from '~/utils/getLanguageFromExtension';
 import { path } from 'chef-agent/utils/path';
 import { editToolParameters } from 'chef-agent/tools/edit';
+import { createFileToolParameters } from 'chef-agent/tools/create_file';
 import { npmInstallToolParameters } from 'chef-agent/tools/npmInstall';
 import { loggingSafeParse } from 'chef-agent/utils/zodUtil';
 import { deployToolParameters } from 'chef-agent/tools/deploy';
@@ -154,6 +155,9 @@ const ToolUseContents = memo(function ToolUseContents({
     }
     case 'edit': {
       return <EditTool invocation={invocation} />;
+    }
+    case 'create_file': {
+      return <CreateFileTool invocation={invocation} />;
     }
     case 'lookupDocs': {
       return <LookupDocsTool invocation={invocation} />;
@@ -295,6 +299,13 @@ function parseToolInvocation(
       }
       case 'edit': {
         const args = loggingSafeParse(editToolParameters, parsedContent.args);
+        if (!args.success) {
+          zodError = args.error;
+        }
+        break;
+      }
+      case 'create_file': {
+        const args = loggingSafeParse(createFileToolParameters, parsedContent.args);
         if (!args.success) {
           zodError = args.error;
         }
@@ -465,6 +476,19 @@ function toolTitle(invocation: ConvexToolInvocation): React.ReactNode {
         </div>
       );
     }
+    case 'create_file': {
+      const args = loggingSafeParse(createFileToolParameters, invocation.args);
+      let renderedPath = 'a file';
+      if (args.success) {
+        renderedPath = args.data.path;
+      }
+      return (
+        <div className="flex items-center gap-2">
+          <FileIcon className="text-content-secondary" />
+          <span>Created {renderedPath}</span>
+        </div>
+      );
+    }
     case 'lookupDocs': {
       const args = loggingSafeParse(lookupDocsParameters, invocation.args);
       if (!args.success) {
@@ -615,12 +639,12 @@ const LineNumberViewer = memo(function LineNumberViewer({
                     dangerouslySetInnerHTML={{
                       __html: highlighter
                         ? highlighter
-                            .codeToHtml(line || ' ', {
-                              lang: language,
-                              theme: theme === 'dark' ? 'github-dark' : 'github-light',
-                            })
-                            .replace(/<\/?pre[^>]*>/g, '')
-                            .replace(/<\/?code[^>]*>/g, '')
+                          .codeToHtml(line || ' ', {
+                            lang: language,
+                            theme: theme === 'dark' ? 'github-dark' : 'github-light',
+                          })
+                          .replace(/<\/?pre[^>]*>/g, '')
+                          .replace(/<\/?code[^>]*>/g, '')
                         : line || ' ',
                     }}
                   />
@@ -654,6 +678,30 @@ function EditTool({ invocation }: { invocation: ConvexToolInvocation }) {
           </div>
           <div className="flex items-center gap-2">
             <pre className="text-bolt-elements-icon-success">{args.data.new}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CreateFileTool({ invocation }: { invocation: ConvexToolInvocation }) {
+  if (invocation.toolName !== 'create_file') {
+    throw new Error('CreateFile tool can only be used for the create_file tool');
+  }
+  if (invocation.state === 'partial-call') {
+    return null;
+  }
+  const args = loggingSafeParse(createFileToolParameters, invocation.args);
+  if (!args.success) {
+    return null;
+  }
+  return (
+    <div className="overflow-hidden rounded-lg border bg-bolt-elements-background-depth-1 font-mono text-sm text-content-primary">
+      <div className="space-y-4 p-4">
+        <div className="space-y-2 overflow-x-auto">
+          <div className="flex items-center gap-2">
+            <pre className="text-bolt-elements-icon-success">{args.data.content}</pre>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import type { Tool } from 'ai';
 import { z } from 'zod';
 
-const createFileToolDescription = `
+export const createFileToolDescription = `
 Create a new file with the specified content. If the file already exists, it will be completely overwritten.
 Use this tool when creating a new file or completely replacing an existing one with new content.
 

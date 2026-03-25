@@ -121,17 +121,17 @@ export const models: Partial<
   'glm-4.7': {
     name: 'GLM-4.7',
     provider: 'openai',
-    requireKey: true,
+    requireKey: false,
   },
   'glm-5': {
     name: 'GLM-5',
     provider: 'openai',
-    requireKey: true,
+    requireKey: false,
   },
   'minimax-m2.5': {
     name: 'M2.5',
     provider: 'minimax',
-    requireKey: true,
+    requireKey: false,
   },
 } as const;
 
