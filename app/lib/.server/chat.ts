@@ -136,16 +136,16 @@ export async function chatAction({ request }: ActionFunctionArgs) {
   let userApiKey: string | undefined;
   if (useUserApiKey) {
     if (body.modelProvider === 'Anthropic' || body.modelProvider === 'Bedrock') {
-      userApiKey = body.userApiKey?.value;
+      userApiKey = body.userApiKey?.value || getEnv('ANTHROPIC_API_KEY');
       body.modelProvider = 'Anthropic';
     } else if (body.modelProvider === 'OpenAI') {
-      userApiKey = body.userApiKey?.openai;
+      userApiKey = body.userApiKey?.openai || getEnv('OPENAI_API_KEY');
     } else if (body.modelProvider === 'XAI') {
-      userApiKey = body.userApiKey?.xai;
+      userApiKey = body.userApiKey?.xai || getEnv('XAI_API_KEY');
     } else if (body.modelProvider === 'Minimax') {
-      userApiKey = body.userApiKey?.minimax;
+      userApiKey = body.userApiKey?.minimax || getEnv('MINIMAX_API_KEY');
     } else {
-      userApiKey = body.userApiKey?.google;
+      userApiKey = body.userApiKey?.google || getEnv('GOOGLE_GENERATIVE_AI_API_KEY');
     }
 
     if (!userApiKey) {
@@ -246,15 +246,15 @@ function hasApiKeySetForProvider(
 ) {
   switch (provider) {
     case 'Anthropic':
-      return userApiKey?.value !== undefined;
+      return userApiKey?.value !== undefined || !!getEnv('ANTHROPIC_API_KEY');
     case 'OpenAI':
-      return userApiKey?.openai !== undefined;
+      return userApiKey?.openai !== undefined || !!getEnv('OPENAI_API_KEY');
     case 'XAI':
-      return userApiKey?.xai !== undefined;
+      return userApiKey?.xai !== undefined || !!getEnv('XAI_API_KEY');
     case 'Google':
-      return userApiKey?.google !== undefined;
+      return userApiKey?.google !== undefined || !!getEnv('GOOGLE_GENERATIVE_AI_API_KEY');
     case 'Minimax':
-      return userApiKey?.minimax !== undefined;
+      return userApiKey?.minimax !== undefined || !!getEnv('MINIMAX_API_KEY');
     default:
       return false;
   }
