@@ -88,6 +88,19 @@ function AssistantMessagePart({
     return <Markdown html>{part.text}</Markdown>;
   }
 
+  if (part.type === 'reasoning') {
+    return (
+      <details className="my-2 rounded border border-elements-borderColor bg-elements-background-depth-2 overflow-hidden">
+        <summary className="cursor-pointer select-none p-2 font-semibold text-content-secondary hover:bg-elements-background-depth-3 transition-colors">
+          Agent Reasoning Process
+        </summary>
+        <div className="border-t border-elements-borderColor p-2 text-sm text-content-secondary whitespace-pre-wrap bg-elements-background-depth-1">
+          {part.reasoning}
+        </div>
+      </details>
+    );
+  }
+
   if (part.type === 'step-start') {
     return null;
   }
