@@ -6,24 +6,7 @@ import { SKIP, visit } from 'unist-util-visit';
 import type { UnistNode, UnistParent } from 'node_modules/unist-util-visit/lib';
 import { allowedHTMLElements } from 'chef-agent/prompts/formattingInstructions';
 
-// Add custom rehype plugin
-function remarkThinkRawContent() {
-  return (tree: any) => {
-    visit(tree, (node: any) => {
-      if (node.type === 'html' && node.value && node.value.startsWith('<think>')) {
-        const cleanedContent = node.value.slice(7);
-        node.value = `<div class="__boltThought__">${cleanedContent}`;
-
-        return;
-      }
-
-      if (node.type === 'html' && node.value && node.value.startsWith('</think>')) {
-        const cleanedContent = node.value.slice(8);
-        node.value = `</div>${cleanedContent}`;
-      }
-    });
-  };
-}
+// think tags are natively parsed by custom ReactMarkdown components now
 
 const rehypeSanitizeOptions: RehypeSanitizeOptions = {
   ...defaultSchema,
@@ -47,8 +30,6 @@ export function remarkPlugins(limitedMarkdown: boolean) {
   if (limitedMarkdown) {
     plugins.unshift(limitedMarkdownPlugin);
   }
-
-  plugins.unshift(remarkThinkRawContent);
 
   return plugins;
 }
