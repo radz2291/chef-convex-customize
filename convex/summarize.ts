@@ -27,7 +27,7 @@ export const firstMessage = internalAction({
       baseURL: process.env.OPENAI_API_BASE_URL || "https://api.openai.com/v1",
     });
     const response = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: process.env.OPENAI_MODEL || "GLM-4.7",
       messages: [
         {
           role: "system",
