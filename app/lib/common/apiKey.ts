@@ -28,6 +28,10 @@ export function hasApiKeySet(
       return !!apiKey.xai?.trim();
     case 'gemini-2.5-pro':
       return !!apiKey.google?.trim();
+    case 'glm-4.7':
+    case 'glm-5':
+    case 'minimax-m2.5':
+      return true; // Bypasses the strict token/API key prompt because it uses its own .env internally in backend
     default: {
       const _exhaustiveCheck: never = modelSelection;
       return false;
